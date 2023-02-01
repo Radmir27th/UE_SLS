@@ -10,7 +10,7 @@
 #include "EngineUtils.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "SaveLoad_Component.h"
+#include "SaveLoadComponent.h"
 
 
 
@@ -45,7 +45,7 @@ void USLSGameInstanceSubsystem::ReadSaveGame()
 		for (FActorIterator It(GetWorld()); It; ++It)
 		{
 			AActor* Actor = *It;
-			USaveLoad_Component* SL = Actor->FindComponentByClass<USaveLoad_Component>();
+			USaveLoadComponent* SL = Actor->FindComponentByClass<USaveLoadComponent>();
 
 			if (!SL)
 			{
@@ -70,7 +70,7 @@ void USLSGameInstanceSubsystem::ReadSaveGame()
 		for (auto& Spawn : CurrentSave->SavedActors)
 		{
 			auto Actor = GetWorld()->SpawnActor(Spawn.Value.SpawnActor);
-			USaveLoad_Component* SL = Actor->FindComponentByClass<USaveLoad_Component>();
+			USaveLoadComponent* SL = Actor->FindComponentByClass<USaveLoadComponent>();
 
 			
 
@@ -93,7 +93,7 @@ void USLSGameInstanceSubsystem::WriteSaveGame()
 		AActor* Actor = *It;
 
 		FActorSaveData ActorData;
-		USaveLoad_Component* SL = Actor->FindComponentByClass<USaveLoad_Component>();
+		USaveLoadComponent* SL = Actor->FindComponentByClass<USaveLoadComponent>();
 
 		if (!SL)
 		{
@@ -121,7 +121,7 @@ void USLSGameInstanceSubsystem::LoadActorItems()
 		{
 			for (auto rActor : Actors)
 			{
-				USaveLoad_Component* SL = rActor->FindComponentByClass<USaveLoad_Component>();
+				USaveLoadComponent* SL = rActor->FindComponentByClass<USaveLoadComponent>();
 
 				if (!SL)
 				{
@@ -140,7 +140,7 @@ void USLSGameInstanceSubsystem::LoadActorItems()
 			for (auto& Items : CurrentSaveItem->SavedActors)
 			{
 				AActor* Actor = GetWorld()->SpawnActor(Items.Value.SpawnActor);
-				USaveLoad_Component* SL = Actor->FindComponentByClass<USaveLoad_Component>();
+				USaveLoadComponent* SL = Actor->FindComponentByClass<USaveLoadComponent>();
 
 				if (!SL)
 				{

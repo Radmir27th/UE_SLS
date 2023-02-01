@@ -45,7 +45,7 @@ void USaveLoadComponent::BeginPlay()
 
 void USaveLoadComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	/*Save();*/
+	Save();
 
 	Super::EndPlay(EndPlayReason);
 
