@@ -26,11 +26,11 @@ public:
 
 
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void ISaveData();
-	UFUNCTION(BlueprintImplementableEvent)
-	void ILoadData(/*FActorSaveData data*/);
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void OnActorSave();
+	UFUNCTION(BlueprintNativeEvent)
+	void OnActorLoad(/*FActorSaveData data*/);
+	UFUNCTION(BlueprintNativeEvent)
 	void isDestroy();
 
 };

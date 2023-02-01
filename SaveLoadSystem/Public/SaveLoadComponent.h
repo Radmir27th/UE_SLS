@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "SLSInterface.h"
 #include "SLSSaveGame.h"
-#include "SLSTargetSpawn.h"
 #include "SaveLoadComponent.generated.h"
 
 enum class Condition
@@ -47,8 +46,8 @@ protected:
 
 
 public:
-	void ISaveData_Implementation();
-	void ILoadData_Implementation(/*FActorSaveData data*/);
+	void OnActorSave_Implementation();
+	void OnActorLoad_Implementation(/*FActorSaveData data*/);
 	void isDestroy_Implementation();
 
 	void Load(FActorSaveData& data);

@@ -13,6 +13,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Components/ActorComponent.h"
+#include "SLSTargetSpawn.h"
 
 
 
@@ -49,27 +50,11 @@ void USaveLoadComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	Super::EndPlay(EndPlayReason);
 
-
+	
 }
 
 
-void USaveLoadComponent::ISaveData_Implementation() {
 
-
-
-}
-
-void USaveLoadComponent::ILoadData_Implementation(/*FActorSaveData data*/) {
-
-
-
-
-
-}
-
-void USaveLoadComponent::isDestroy_Implementation() {
-	return;
-}
 
 void USaveLoadComponent::Load(FActorSaveData& data)
 {
@@ -90,6 +75,7 @@ void USaveLoadComponent::LoadDefault(FActorSaveData& data)
 	Ar.ArNoDelta = true;
 	Ar.ArIsSaveGame = true;
 	GetOwner()->Serialize(Ar);
+	UE_LOG(LogTemp, Error, TEXT("The Identity is: %d"), data.ID);
 	if (data.ID != 0)
 	{
 		TArray<AActor*> TempActors;
@@ -106,13 +92,18 @@ void USaveLoadComponent::LoadDefault(FActorSaveData& data)
 			if (target->ID == data.ID)
 			{
 
-				GetOwner()->SetActorTransform(target->GetActorTransform());
+				GetOwner()->SetActorLocation(target->GetActorLocation());
 			}
 		}
-		return;
 	}
-
-	GetOwner()->SetActorTransform(data.Transform);
+	else
+	{
+		GetOwner()->SetActorTransform(data.Transform);
+	}
+	if(GetOwner()->Implements<USLSInterface>())
+	{
+		ISLSInterface::Execute_OnActorLoad(GetOwner());
+	}
 
 }
 
