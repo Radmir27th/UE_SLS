@@ -10,12 +10,13 @@
 #include "EngineUtils.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "SaveLoad_Component.h"
+#include "SaveLoadComponent.h"
 
 
 
 void USLSGameInstanceSubsystem::LoadGame()
 {
+
 	ReadSaveGame();
 	LoadActorItems();
 }
@@ -45,16 +46,19 @@ void USLSGameInstanceSubsystem::ReadSaveGame()
 		for (FActorIterator It(GetWorld()); It; ++It)
 		{
 			AActor* Actor = *It;
-			USaveLoad_Component* SL = Actor->FindComponentByClass<USaveLoad_Component>();
+			USaveLoadComponent* SL = Actor->FindComponentByClass<USaveLoadComponent>();
+
+
 
 			if (!SL)
 			{
 				continue;
 			}
-		
+
 			if (SL->ShouldLoadWithCharacter)
 			{
 				Actors.Add(Actor);
+				UE_LOG(LogTemp, Error, TEXT("FORM LOAD , %s"), *Actor->GetName());
 				continue;
 			}
 
@@ -70,17 +74,20 @@ void USLSGameInstanceSubsystem::ReadSaveGame()
 		for (auto& Spawn : CurrentSave->SavedActors)
 		{
 			auto Actor = GetWorld()->SpawnActor(Spawn.Value.SpawnActor);
-			USaveLoad_Component* SL = Actor->FindComponentByClass<USaveLoad_Component>();
+			USaveLoadComponent* SL = Actor->FindComponentByClass<USaveLoadComponent>();
 
-			
+
 
 			if (!SL)
 			{
 				continue;
 			}
 
+			SL->ShouldLoadWithCharacter = false;
+
 			SL->Load(CurrentSave->SavedActors[Spawn.Value.ActorName]);
 		}
+		CurrentSave->SavedActors.Empty();
 	}
 }
 
@@ -93,7 +100,7 @@ void USLSGameInstanceSubsystem::WriteSaveGame()
 		AActor* Actor = *It;
 
 		FActorSaveData ActorData;
-		USaveLoad_Component* SL = Actor->FindComponentByClass<USaveLoad_Component>();
+		USaveLoadComponent* SL = Actor->FindComponentByClass<USaveLoadComponent>();
 
 		if (!SL)
 		{
@@ -117,21 +124,23 @@ void USLSGameInstanceSubsystem::LoadActorItems()
 	}
 	else
 	{
-		if (!Actors.IsEmpty())
+
+		if (Actors.Num() != 0)
 		{
 			for (auto rActor : Actors)
 			{
-				USaveLoad_Component* SL = rActor->FindComponentByClass<USaveLoad_Component>();
+				USaveLoadComponent* SL = rActor->FindComponentByClass<USaveLoadComponent>();
 
 				if (!SL)
 				{
 					continue;
 				}
 
-				if (CurrentSaveItem->SavedActors.Contains(rActor->GetFName()))
+				if (CurrentSaveItem->SavedActors.Contains(SL->Tag))
 				{
-					SL->Load(CurrentSaveItem->SavedActors[rActor->GetFName()]);
+					SL->Load(CurrentSaveItem->SavedActors[SL->Tag]);
 				}
+
 			}
 		}
 		else
@@ -140,28 +149,30 @@ void USLSGameInstanceSubsystem::LoadActorItems()
 			for (auto& Items : CurrentSaveItem->SavedActors)
 			{
 				AActor* Actor = GetWorld()->SpawnActor(Items.Value.SpawnActor);
-				USaveLoad_Component* SL = Actor->FindComponentByClass<USaveLoad_Component>();
+				USaveLoadComponent* SL = Actor->FindComponentByClass<USaveLoadComponent>();
 
 				if (!SL)
 				{
 					continue;
-					
 				}
 
-				SL->ShouldLoadWithCharacter = false;
-				SL->Spawned = true;
 
+				SL->Spawned = false;
+				SL->ID = Items.Value.ID;
+				SL->Tag = Items.Value.ActorName;
+				SL->ShouldLoadWithCharacter = true;
 				SL->Load(CurrentSaveItem->SavedActors[Items.Value.ActorName]);
 
 			}
 
 		}
-
+		CurrentSaveItem->SavedActors.Empty();
 	}
 	Actors.Empty();
+
 }
 
-void USLSGameInstanceSubsystem::GetSaveDataFromComp(FActorSaveData ActorData, FName ID, bool isNeedToLoad)
+void USLSGameInstanceSubsystem::GetSaveDataFromComp(FActorSaveData& ActorData, FName ID, bool isNeedToLoad)
 {
 
 	if (isNeedToLoad)
@@ -171,10 +182,7 @@ void USLSGameInstanceSubsystem::GetSaveDataFromComp(FActorSaveData ActorData, FN
 			CurrentSaveItem = Cast<USLSSaveGame>(UGameplayStatics::CreateSaveGameObject(USLSSaveGame::StaticClass()));
 			CurrentSaveItem->SavedActors.Empty();
 		}
-		if (CurrentSaveItem->SavedActors.Contains(ID))
-			CurrentSaveItem->SavedActors[ID] = ActorData;
-		else
-			CurrentSaveItem->SavedActors.Add(ID, ActorData);
+		CurrentSaveItem->SavedActors.Add(ID, ActorData);
 		return;
 	}
 
@@ -184,10 +192,7 @@ void USLSGameInstanceSubsystem::GetSaveDataFromComp(FActorSaveData ActorData, FN
 		CurrentSave = Cast<USLSSaveGame>(UGameplayStatics::CreateSaveGameObject(USLSSaveGame::StaticClass()));
 		CurrentSave->SavedActors.Empty();
 	}
-	if (CurrentSave->SavedActors.Contains(ID))
-		CurrentSave->SavedActors[ID] = ActorData;
-	else
-		CurrentSave->SavedActors.Add(ID, ActorData);
+	CurrentSave->SavedActors.Add(ID, ActorData);
 
 }
 
@@ -212,6 +217,7 @@ void USLSGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void USLSGameInstanceSubsystem::Deinitialize()
 {
+	SaveGame();
 	UGameplayStatics::SaveGameToSlot(CurrentSave, SaveGameSlotName, 0);
 	UGameplayStatics::SaveGameToSlot(CurrentSaveItem, SaveActorItemSlotName, 0);
 }

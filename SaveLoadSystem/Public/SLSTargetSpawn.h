@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SLSTargetSpawn.generated.h"
 
+
 UCLASS()
 class SAVELOADSYSTEM_API ASLSTargetSpawn : public AActor
 {
@@ -15,10 +16,8 @@ public:
 	// Sets default values for this actor's properties
 	ASLSTargetSpawn();
 
-
 	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* StaticMesh;
-	FName StaticMeshName = "Static Mesh";
+	UBillboardComponent *BillBoard;
 
 	UPROPERTY(EditAnywhere, DisplayName = "ID")
 		int32 ID;

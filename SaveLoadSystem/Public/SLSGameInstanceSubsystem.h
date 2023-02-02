@@ -46,7 +46,7 @@ public:
 
 	
 
-	void GetSaveDataFromComp(FActorSaveData ActorData, FName ID, bool isNeedToLoad);
+	void GetSaveDataFromComp(FActorSaveData &ActorData, FName ID, bool isNeedToLoad);
 
 	void Initialize(FSubsystemCollectionBase& Collection) override;
 
