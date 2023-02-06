@@ -33,6 +33,8 @@ public:
 	UPROPERTY()
 		TArray<uint8> ByteData;
 	UPROPERTY()
+		TArray<uint8> ByteDataComp;
+	UPROPERTY()
 		int32 ID;
 
 

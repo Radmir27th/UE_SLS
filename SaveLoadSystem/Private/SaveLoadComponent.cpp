@@ -74,6 +74,20 @@ void USaveLoadComponent::LoadDefault(FActorSaveData& data)
 	FObjectAndNameAsStringProxyArchive Ar(MemoReader, false);
 	Ar.ArNoDelta = true;
 	Ar.ArIsSaveGame = true;
+
+	auto Comps = GetOwner()->GetComponents();
+
+	for (auto& comp : Comps)
+	{
+		FMemoryReader MemoReaderComp(data.ByteDataComp, true);
+		FObjectAndNameAsStringProxyArchive Arr(MemoReaderComp, false);
+		Arr.ArNoDelta = true;
+		Arr.ArIsSaveGame = true;
+		comp->Serialize(Arr);
+		
+	}
+
+
 	GetOwner()->Serialize(Ar);
 	UE_LOG(LogTemp, Error, TEXT("The Identity is: %d"), data.ID);
 	if (data.ID != 0)
@@ -145,6 +159,18 @@ void USaveLoadComponent::Save()
 	Ar.ArNoDelta = true;
 	Ar.ArIsSaveGame = true;
 	GetOwner()->Serialize(Ar);
+
+	auto Comps = GetOwner()->GetComponents();
+
+	for (auto& comp : Comps)
+	{
+		FMemoryReader MemoReaderComp(ActorSave.ByteDataComp, true);
+		FObjectAndNameAsStringProxyArchive Arr(MemoReaderComp, false);
+		Arr.ArNoDelta = true;
+		Arr.ArIsSaveGame = true;
+		comp->Serialize(Arr);
+
+	}
 
 	condition = Condition::SAVE;
 	this->SaveLoadMaterials(ActorSave);

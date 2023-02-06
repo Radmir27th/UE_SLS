@@ -48,7 +48,7 @@ void USLSGameInstanceSubsystem::ReadSaveGame()
 			AActor* Actor = *It;
 			USaveLoadComponent* SL = Actor->FindComponentByClass<USaveLoadComponent>();
 
-
+			TSet <UActorComponent*> ArrComp;
 
 			if (!SL)
 			{
