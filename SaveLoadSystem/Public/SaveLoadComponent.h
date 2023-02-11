@@ -24,6 +24,8 @@ class SAVELOADSYSTEM_API USaveLoadComponent : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	USaveLoadComponent();
+
+	
 	UPROPERTY(EditAnywhere)
 		bool ShouldLoadWithCharacter = false;
 	bool Spawned = false;
@@ -43,7 +45,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 
-
+	
 
 public:
 	void OnActorSave_Implementation();

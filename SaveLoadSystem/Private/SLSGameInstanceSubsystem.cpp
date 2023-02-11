@@ -14,9 +14,12 @@
 
 
 
-void USLSGameInstanceSubsystem::LoadGame()
+void USLSGameInstanceSubsystem::LoadGame(FString SlotName)
 {
-
+	if (SlotName.IsEmpty())
+		SelectSlot();
+	else
+		SaveGameSlotName = SlotName;
 	ReadSaveGame();
 	LoadActorItems();
 }
@@ -28,14 +31,8 @@ void USLSGameInstanceSubsystem::SaveGame()
 }
 
 
-
-
-
-
-
 void USLSGameInstanceSubsystem::ReadSaveGame()
 {
-	SelectSlot();
 	CurrentSave = Cast<USLSSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameSlotName, 0));
 	if (!CurrentSave)
 	{
@@ -58,7 +55,6 @@ void USLSGameInstanceSubsystem::ReadSaveGame()
 			if (SL->ShouldLoadWithCharacter)
 			{
 				Actors.Add(Actor);
-				UE_LOG(LogTemp, Error, TEXT("FORM LOAD , %s"), *Actor->GetName());
 				continue;
 			}
 
@@ -114,6 +110,17 @@ void USLSGameInstanceSubsystem::WriteSaveGame()
 	UGameplayStatics::SaveGameToSlot(CurrentSave, SaveGameSlotName, 0);
 }
 
+void USLSGameInstanceSubsystem::SaveToSlot(FString SlotName)
+{
+	UGameplayStatics::SaveGameToSlot(CurrentSave, SlotName, 0);
+	UGameplayStatics::SaveGameToSlot(CurrentSaveItem, SaveActorItemSlotName, 0);
+}
+
+void USLSGameInstanceSubsystem::DeleteSlot(FString SlotName)
+{
+	UGameplayStatics::DeleteGameInSlot(SlotName, 0);
+}
+
 void USLSGameInstanceSubsystem::LoadActorItems()
 {
 	if (!CurrentSaveItem)
@@ -156,8 +163,6 @@ void USLSGameInstanceSubsystem::LoadActorItems()
 					continue;
 				}
 
-
-				SL->Spawned = false;
 				SL->ID = Items.Value.ID;
 				SL->Tag = Items.Value.ActorName;
 				SL->ShouldLoadWithCharacter = true;
@@ -194,6 +199,8 @@ void USLSGameInstanceSubsystem::GetSaveDataFromComp(FActorSaveData& ActorData, F
 	}
 	CurrentSave->SavedActors.Add(ID, ActorData);
 
+	
+
 }
 
 void USLSGameInstanceSubsystem::SelectSlot() {
@@ -211,13 +218,12 @@ void USLSGameInstanceSubsystem::SelectSlot() {
 
 void USLSGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
+
 	Super::Initialize(Collection);
 
 }
 
 void USLSGameInstanceSubsystem::Deinitialize()
 {
-	SaveGame();
-	UGameplayStatics::SaveGameToSlot(CurrentSave, SaveGameSlotName, 0);
-	UGameplayStatics::SaveGameToSlot(CurrentSaveItem, SaveActorItemSlotName, 0);
+	UE_LOG(LogTemp, Error, TEXT("WHEN MTF"));
 }

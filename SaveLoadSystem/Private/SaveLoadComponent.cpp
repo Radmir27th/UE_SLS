@@ -30,9 +30,6 @@ USaveLoadComponent::USaveLoadComponent()
 	// ...
 }
 
-
-
-
 // Called when the game starts
 void USaveLoadComponent::BeginPlay()
 {
@@ -155,6 +152,7 @@ void USaveLoadComponent::Save()
 	}
 
 	SG->GetSaveDataFromComp(ActorSave, ActorSave.ActorName, ShouldLoadWithCharacter);
+
 }
 
 void USaveLoadComponent::SaveLoadMaterials(FActorSaveData& data)
@@ -179,10 +177,5 @@ void USaveLoadComponent::SaveLoadMaterials(FActorSaveData& data)
 			}
 		}
 	}
-
-
-
-
-
 }
 

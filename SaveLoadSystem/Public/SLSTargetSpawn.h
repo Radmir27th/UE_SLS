@@ -19,7 +19,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UBillboardComponent *BillBoard;
 
-	UPROPERTY(EditAnywhere, DisplayName = "ID")
+	UPROPERTY(EditAnywhere, DisplayName = "ID", Category = "SLS Settings")
 		int32 ID;
 
 

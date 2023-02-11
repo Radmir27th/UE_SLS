@@ -28,11 +28,13 @@ protected:
 
 private:
 	UFUNCTION(BlueprintCallable, Category = "Saving")
-		void LoadGame();
+		void LoadGame(FString SlotName);
 	UFUNCTION(BlueprintCallable, Category = "Saving")
 		void SaveGame();
-
-	void SelectSlot();
+	UFUNCTION(BlueprintCallable, Category = "Saving")
+		void SaveToSlot(FString SlotName);
+	UFUNCTION(BlueprintCallable, Category = "Saving")
+		void DeleteSlot(FString SlotName);
 
 	void ReadSaveGame();
 	void WriteSaveGame();
@@ -40,8 +42,11 @@ private:
 	void SaveActorItems();
 	void LoadActorItems();
 
+	void SelectSlot();
+
 	TArray<AActor*> Actors;
-	
+private: 
+
 public:
 
 	
